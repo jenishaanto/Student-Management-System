@@ -1,0 +1,149 @@
+import os
+
+class Student:
+    def __init__(self, roll, name, marks):
+        self.roll = roll
+        self.name = name
+        self.marks = marks
+
+    def to_dict(self):
+        return {"roll": self.roll, "name": self.name, "marks": self.marks}
+
+
+filename = "student.txt"
+
+
+# ---------- Add Student ----------
+def add_student():
+    roll = input("Enter Roll No: ")
+    name = input("Enter Name: ")
+    marks = int(input("Enter Marks: "))
+
+    student = Student(roll, name, marks).to_dict()
+
+    with open(filename, "a") as f:
+        f.write(str(student) + "\n")
+
+    print("Student added successfully!\n")
+
+
+# ---------- View Students ----------
+def view_students():
+    if not os.path.exists(filename):
+        print("No data found!\n")
+        return
+
+    print("\n--- Student List ---")
+    with open(filename, "r") as f:
+        for line in f:
+            print(line.strip())
+    print()
+
+
+# ---------- Search Student ----------
+def search_student():
+    roll = input("Enter Roll No to Search: ")
+
+    found = False
+    with open(filename, "r") as f:
+        for line in f:
+            data = eval(line)
+            if data["roll"] == roll:
+                print("Student Found:", data, "\n")
+                found = True
+                break
+
+    if not found:
+        print("Student not found!\n")
+
+
+# ---------- Update Student ----------
+def update_student():
+    roll = input("Enter Roll No to Update: ")
+    new_name = input("Enter New Name: ")
+    new_marks = int(input("Enter New Marks: "))
+
+    updated = False
+    data_list = []
+
+    with open(filename, "r") as f:
+        for line in f:
+            data = eval(line)
+            if data["roll"] == roll:
+                data["name"] = new_name
+                data["marks"] = new_marks
+                updated = True
+            data_list.append(data)
+
+    if updated:
+        with open(filename, "w") as f:
+            for d in data_list:
+                f.write(str(d) + "\n")
+        print("Student Updated Successfully!\n")
+    else:
+        print("Roll number not found!\n")
+
+
+# ---------- Delete Student ----------
+def delete_student():
+    roll = input("Enter Roll No to Delete: ")
+
+    deleted = False
+    data_list = []
+
+    with open(filename, "r") as f:
+        for line in f:
+            data = eval(line)
+            if data["roll"] != roll:
+                data_list.append(data)
+            else:
+                deleted = True
+
+    if deleted:
+        with open(filename, "w") as f:
+            for d in data_list:
+                f.write(str(d) + "\n")
+        print("Student deleted!\n")
+    else:
+        print("Roll number not found!\n")
+
+
+# ---------- Average & Topper ----------
+def find_topper():
+    total_marks = 0
+    count = 0
+    topper = None
+
+    with open(filename, "r") as f:
+        for line in f:
+            data = eval(line)
+            total_marks += data["marks"]
+            count += 1
+            if topper is None or data["marks"] > topper["marks"]:
+                topper = data
+
+    if count == 0:
+        print("No student records found.\n")
+        return
+
+    print("Class Average:", total_marks / count)
+    print("Topper:", topper, "\n")
+
+
+# ---------- Main Menu ----------
+while True:
+    print("1.Add  2.View  3.Search  4.Update  5.Delete  6.Topper  7.Exit")
+    ch = int(input("Enter choice: "))
+
+    if ch == 1: add_student()
+    elif ch == 2: view_students()
+    elif ch == 3: search_student()
+    elif ch == 4: update_student()
+    elif ch == 5: delete_student()
+    elif ch == 6: find_topper()
+    elif ch == 7: break
+    else: print("Invalid Choice!\n")
+  
+    
+    
+   
